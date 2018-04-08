@@ -61,7 +61,7 @@ public class ScheduledTasks {
         Logger.info("执行结果：" + loginall);
         Thread.sleep(500);
 
-        Logger.info("定时任务执行批量加购物车");
+        Logger.info("定时任务执行资金收集");
         String shouge = expectedEarningsAction.shouge();
         Logger.info("执行结果：" + shouge);
     }
