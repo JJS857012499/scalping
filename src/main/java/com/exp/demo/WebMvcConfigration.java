@@ -2,6 +2,7 @@ package com.exp.demo;
 
 import com.exp.demo.ex.MyExceptionHandler;
 import com.exp.demo.in.WebInterceptor;
+import com.exp.demo.interceptors.LoginInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -25,6 +26,7 @@ public class WebMvcConfigration extends WebMvcConfigurerAdapter {
         // 多个拦截器组成一个拦截器链
         // addPathPatterns 用于添加拦截规则
         // excludePathPatterns 用户排除拦截
+        registry.addInterceptor(new LoginInterceptor()).addPathPatterns("/**").excludePathPatterns("/wechat/**","/websocket/**");
         registry.addInterceptor(new WebInterceptor()).addPathPatterns("/**");
         super.addInterceptors(registry);
     }

@@ -19,6 +19,8 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
+import java.util.Iterator;
 import java.util.Map;
 
 public class HttpClientUtil {
@@ -346,4 +348,5 @@ public class HttpClientUtil {
 
         return result;
     }
+
 }

@@ -20,7 +20,17 @@ public class ProductVo {
 
     private String shopId;
 
-    private Integer quantity = 1;
+    private Integer quantity;
 
-
+    @Override
+    public String toString() {
+        return "ProductVo{" +
+                "productId='" + productId + '\'' +
+                ", skuId='" + skuId + '\'' +
+                ", price=" + price +
+                ", saleType='" + saleType + '\'' +
+                ", shopId='" + shopId + '\'' +
+                ", quantity=" + quantity +
+                '}';
+    }
 }

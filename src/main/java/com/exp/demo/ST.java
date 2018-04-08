@@ -40,9 +40,19 @@ public class ST {
     //加入购物车
     public static final String p_addCar = "https://app.zhidianlife.com/life-h2h/order/apis/unity/v1/car/addCar";
 
+    //确认收货
+    public static final String p_shouyi = "https://app.zhidianlife.com/mobile-account-service/ownerEarning/verifyWhite";
+
+    //查询可提余额
+    public static final String tixian="https://app.zhidianlife.com/life-mobile-mall/apis/v2/user/index";
+    //获取收货地址
+    public static final String shdz="https://app.zhidianlife.com/life-mobile-mall/apis/v1/receive/selectReceiveList";
+    //下单
+    public static final String addOrder="https://app.zhidianlife.com/life-h2h/order/apis/unity/v3/order/add";
+
     public static Map<String, String> headers = CollectionKit.newHashMap();
     static {
-        headers.put("version", "31");
+        headers.put("version", "32");
         headers.put("app_key", "android");
     }
 

@@ -11,8 +11,8 @@ import lombok.Data;
 @Data
 public class ShopProductVo {
     private String shopId;
-    private String priceFrom = "198";
-    private String priceTo = "210";
+    private String priceFrom = "1";
+    private String priceTo = "230";
     private Integer pageSize = 40;
     private Integer startPage = 1;
 
