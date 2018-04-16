@@ -2,10 +2,21 @@ package com.exp.demo.task;
 
 import com.exp.demo.action.ExpectedEarningsAction;
 import com.exp.demo.action.OrderAction;
+import com.exp.demo.vo.ShouYiVo;
+import com.exp.demo.wx.TemplateData;
+import com.exp.demo.wx.WX_TemplateMsgUtil;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static com.exp.demo.wx.WX_TemplateMsgUtil.packJsonmsg;
 
 /**
  * Created by 江俊升 on 2018/4/8.
@@ -20,6 +31,12 @@ public class ScheduledTasks {
 
     @Autowired
     private ExpectedEarningsAction expectedEarningsAction;
+
+    @Value("${sd_wx_tempid}")
+    private String tempid;
+    @Value("#{'${sd_wx_openid}'.split(',')}")
+    private List<String> openIdList;
+
 
     // cron表达式 秒 分钟 小时 日 月 星期 年
     //每天23点48分执行发货收货
@@ -44,6 +61,7 @@ public class ScheduledTasks {
     public void scheduleDelivery0() throws InterruptedException {
         scheduleDelivery();
     }
+
     @Scheduled(cron = "0 10 9 * * ?")
     public void scheduleFinish0() throws InterruptedException {
         scheduleFinish();
@@ -53,6 +71,7 @@ public class ScheduledTasks {
     public void scheduleDelivery1() throws InterruptedException {
         scheduleDelivery();
     }
+
     @Scheduled(cron = "0 25 12 * * ?")
     public void scheduleFinish1() throws InterruptedException {
         scheduleFinish();
@@ -62,6 +81,7 @@ public class ScheduledTasks {
     public void scheduleDelivery2() throws InterruptedException {
         scheduleDelivery();
     }
+
     @Scheduled(cron = "0 40 21 * * ?")
     public void scheduleFinish2() throws InterruptedException {
         scheduleFinish();
@@ -71,6 +91,7 @@ public class ScheduledTasks {
     public void scheduleDelivery3() throws InterruptedException {
         scheduleDelivery();
     }
+
     @Scheduled(cron = "0 40 22 * * ?")
     public void scheduleFinish3() throws InterruptedException {
         scheduleFinish();
@@ -80,6 +101,7 @@ public class ScheduledTasks {
     public void scheduleDelivery4() throws InterruptedException {
         scheduleDelivery();
     }
+
     @Scheduled(cron = "0 40 23 * * ?")
     public void scheduleFinish4() throws InterruptedException {
         scheduleFinish();
@@ -89,6 +111,7 @@ public class ScheduledTasks {
     public void scheduleDelivery5() throws InterruptedException {
         scheduleDelivery();
     }
+
     @Scheduled(cron = "0 40 20 * * ?")
     public void scheduleFinish5() throws InterruptedException {
         scheduleFinish();
@@ -139,6 +162,23 @@ public class ScheduledTasks {
     }
 
 
+    //收益警告，防止忘记支付
+    @Scheduled(cron = "0 0 21 * * ?")
+    public void schedulShouyiWarn() {
+        List<ShouYiVo> shouYiVoList = orderAction.shouyi();
+        if (CollectionUtils.isEmpty(shouYiVoList) || "-1".equals(shouYiVoList.get(0).getResult())) {
+            for (String openId : openIdList) {
+                Logger.warn("发送微信警告消息");
+                senMsg(openId, tempid);
+            }
+        }
+    }
+
+    private void senMsg(String openId, String regTempId) {
+        Map<String, TemplateData> param = new HashMap<>();
+        //调用发送微信消息给用户的接口
+        WX_TemplateMsgUtil.sendWechatMsgToUser(openId, regTempId, "", "#000000", packJsonmsg(param));
+    }
 
 
 }
