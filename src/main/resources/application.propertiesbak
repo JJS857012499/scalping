@@ -18,9 +18,9 @@ spring.thymeleaf.cache=false
 #spring.resources.chain.strategy.content.paths=/**
 
 #刷单账号 10个
-sd.zhidian.account=13144076913,13672709075,17520620727,13106936287,13620478883,13421190847,13729479992,17322975397,17875459437,13128328376
+sd.zhidian.account=18578638326,18825146600,13640328644,18318326959,13144076923,13288585219,13060589104,13112112986,13060589486,13106936738
 #支付账号 5个
-sd.zhidian.zhifuaccount=13620478883,13421190847,13729479992,17322975397,17875459437
+sd.zhidian.zhifuaccount=18578638326,18825146600,13640328644,18318326959,13144076923
 #登录密码 所有账号一样
 sd_zhiidan_password=
 
@@ -33,10 +33,3 @@ sd_paypassword=
 #项目登录账号和密码
 sd.login.userMap[jjs]=jjs
 sd.login.userMap[csj]=csj
-
-#微信公众号配置
-sd_wx_appid=wx405b1946f6a269e0
-sd_wx_appsecret=d915206eeb11aa6b5c53634aaf6ac31e
-sd_wx_tempid=mhtd6mAN9ou-SOwX9q_Sy8XqJfCcTABqOqSuTi_6_gw
-# 接受消息的openid
-sd_wx_openid=ojNZ6uFHAWd7VbHe48cqkyPvbAVU,ojNZ6uCni-WUXrLg0qY67xRr5GjU
