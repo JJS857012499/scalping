@@ -143,6 +143,10 @@ public class ScheduledTasks {
         Logger.info("执行结果：" + loginall);
         Thread.sleep(500);
 
+        Logger.info("定时任务执行清空购物车");
+        String removeCar = orderAction.removeCar();
+        Logger.info("执行结果：" + removeCar);
+
         Logger.info("定时任务执行批量加购物车");
         String order = orderAction.order();
         Logger.info("执行结果：" + order);
