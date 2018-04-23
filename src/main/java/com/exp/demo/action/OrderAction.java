@@ -39,42 +39,72 @@ public class OrderAction {
     }
 
     @ResponseBody
+    @RequestMapping({"removeCar"})
+    public String removeCar() {
+        for (String sessionId : ST.cache.values()) {
+            Map<String, String> header = ST.headers;
+            header.put("sessionId", sessionId);
+            String result = HttpClientUtil.sendHttpsPost("https://app.zhidianlife.com/life-h2h/order/apis/unity/v1/car/listCar", "", ST.headers);
+            log.info("listCar result : {}", result);
+            List<String> carIdList = new ArrayList<>();
+
+            JSONObject resultJson = JSON.parseObject(result);
+            JSONObject data = resultJson.getJSONObject("data");
+            JSONArray shopCarList = data.getJSONArray("shopCarList");
+            if (shopCarList != null && !shopCarList.isEmpty()) {
+                for (JSONObject shopCar : shopCarList.toJavaList(JSONObject.class)) {
+                    JSONArray products = shopCar.getJSONArray("products");
+                    for(JSONObject product: products.toJavaList(JSONObject.class)){
+                        String carId = product.getString("carId");
+                        carIdList.add(carId);
+                    }
+                }
+                Map<String,Object> removeCarParams = new HashMap<>();
+                removeCarParams.put("carId", carIdList);
+                String RemoveCarResult = HttpClientUtil.sendHttpsPost("https://app.zhidianlife.com/life-h2h/order/apis/unity/v1/car/removeCar", JsonUtil.toJson(removeCarParams), ST.headers);
+                log.info("RemoveCarResult result : {}", result);
+            }
+        }
+        return "清空购物车完毕。。。";
+    }
+
+    @ResponseBody
     @RequestMapping({"order"})
     public String order() {
         log.info("================================================请求加入购物车==================================");
-            Map<String, List<ProductVo>> map = new HashMap();
-            Iterator var2 = ST.cache.keySet().iterator();
+        Map<String, List<ProductVo>> map = new HashMap();
+        Iterator var2 = ST.cache.keySet().iterator();
 
-            while (var2.hasNext()) {
-                String s = (String) var2.next();
-                String userId = ((String) ST.cache.get(s)).split("@")[0];
-                ShopProductVo shopProductVo = new ShopProductVo();
-                shopProductVo.setShopId(userId);
-                String result = HttpClientUtil.sendHttpsPost("https://s1.zhidianlife.com/search/api/v2/commodity/searchByShop", JSON.toJSONString(shopProductVo), ST.headers);
-                JSONObject resultJson = JSON.parseObject(result);
-                JSONObject data = resultJson.getJSONObject("data");
-                JSONArray commodityList = data.getJSONArray("commodityList");
-                List<JSONObject> jsonObjects = commodityList.toJavaList(JSONObject.class);
-                List<String> productIdz = (List) jsonObjects.stream().map((t) -> {
-                    return t.getString("productId");
-                }).collect(Collectors.toList());
-                List<ProductVo> ProductVos = new ArrayList();
-                Iterator var13 = this.zhifuaccount.iterator();
-                while (var13.hasNext()) {
-                    String t = (String) var13.next();
-                    ProductVo sku = this.getSku(productIdz);
-                    if (sku == null) {
-                        log.info("-------------------------------sku is null---------------------------------");
-                    }
-
-                    ProductVos.add(sku);
-                    map.put(userId, ProductVos);
+        while (var2.hasNext()) {
+            String s = (String) var2.next();
+            String userId = ((String) ST.cache.get(s)).split("@")[0];
+            ShopProductVo shopProductVo = new ShopProductVo();
+            shopProductVo.setShopId(userId);
+            String result = HttpClientUtil.sendHttpsPost("https://s1.zhidianlife.com/search/api/v2/commodity/searchByShop", JSON.toJSONString(shopProductVo), ST.headers);
+            JSONObject resultJson = JSON.parseObject(result);
+            JSONObject data = resultJson.getJSONObject("data");
+            JSONArray commodityList = data.getJSONArray("commodityList");
+            List<JSONObject> jsonObjects = commodityList.toJavaList(JSONObject.class);
+            List<String> productIdz = (List) jsonObjects.stream().map((t) -> {
+                return t.getString("productId");
+            }).collect(Collectors.toList());
+            List<ProductVo> ProductVos = new ArrayList();
+            Iterator var13 = this.zhifuaccount.iterator();
+            while (var13.hasNext()) {
+                String t = (String) var13.next();
+                ProductVo sku = this.getSku(productIdz);
+                if (sku == null) {
+                    log.info("-------------------------------sku is null---------------------------------");
                 }
-            }
 
-            log.info("符合条件的商品" + JsonUtil.toJson(map));
-            this.addShopCar(map);
-            return "购物车添加完毕。。。。。。";
+                ProductVos.add(sku);
+                map.put(userId, ProductVos);
+            }
+        }
+
+        log.info("符合条件的商品" + JsonUtil.toJson(map));
+        this.addShopCar(map);
+        return "购物车添加完毕。。。。。。";
 
 
     }
@@ -302,8 +332,8 @@ public class OrderAction {
 
     @RequestMapping("loginall")
     @ResponseBody
-    public String loginall(){
-        for(String s:account){
+    public String loginall() {
+        for (String s : account) {
             loginVo loginVo = new loginVo();
             if (StringKit.isNotBlank(this.password)) {
                 loginVo.setPassword(Md5Util.encoderByMd5(this.password));
@@ -313,8 +343,8 @@ public class OrderAction {
             String result = HttpClientUtil.sendHttpsPost("https://account.zhidianlife.com/passport/api/mobile/login", JSON.toJSONString(loginVo), ST.headers);
             log.info("login result : {}", result);
             JSONObject jsonObject1 = JSON.parseObject(result);
-            if(!"000".equals(jsonObject1.getString("result"))){
-                return "批量登录失败,账户："+s+",返回参数："+result;
+            if (!"000".equals(jsonObject1.getString("result"))) {
+                return "批量登录失败,账户：" + s + ",返回参数：" + result;
             }
             JSONObject data = jsonObject1.getJSONObject("data");
             log.info("sessionId : {}", data.getString("sessionId"));
