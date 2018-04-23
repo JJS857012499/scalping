@@ -40,7 +40,7 @@ public class ScheduledTasks {
 
     // cron表达式 秒 分钟 小时 日 月 星期 年
     //每天23点48分执行发货收货
-    @Scheduled(cron = "0 45 23 * * ?")
+    @Scheduled(cron = "0 35 23 * * ?")
     public void scheduleDeliveryandFinish() throws InterruptedException {
         Logger.info("定时任务执行批量登录操作");
         String loginall = orderAction.loginall();
@@ -57,62 +57,62 @@ public class ScheduledTasks {
         Logger.info("执行结果：" + finish);
     }
 
-    @Scheduled(cron = "0 0 9 * * ?")
+    @Scheduled(cron = "0 50 8 * * ?")
     public void scheduleDelivery0() throws InterruptedException {
         scheduleDelivery();
     }
 
-    @Scheduled(cron = "0 10 9 * * ?")
+    @Scheduled(cron = "0 0 9 * * ?")
     public void scheduleFinish0() throws InterruptedException {
         scheduleFinish();
     }
 
-    @Scheduled(cron = "0 55 11 * * ?")
+    @Scheduled(cron = "0 45 11 * * ?")
     public void scheduleDelivery1() throws InterruptedException {
         scheduleDelivery();
     }
 
-    @Scheduled(cron = "0 25 12 * * ?")
+    @Scheduled(cron = "0 15 12 * * ?")
     public void scheduleFinish1() throws InterruptedException {
         scheduleFinish();
     }
 
-    @Scheduled(cron = "0 10 21 * * ?")
+    @Scheduled(cron = "0 0 21 * * ?")
     public void scheduleDelivery2() throws InterruptedException {
         scheduleDelivery();
     }
 
-    @Scheduled(cron = "0 40 21 * * ?")
+    @Scheduled(cron = "0 30 21 * * ?")
     public void scheduleFinish2() throws InterruptedException {
         scheduleFinish();
     }
 
-    @Scheduled(cron = "0 10 22 * * ?")
+    @Scheduled(cron = "0 0 22 * * ?")
     public void scheduleDelivery3() throws InterruptedException {
         scheduleDelivery();
     }
 
-    @Scheduled(cron = "0 40 22 * * ?")
+    @Scheduled(cron = "0 30 22 * * ?")
     public void scheduleFinish3() throws InterruptedException {
         scheduleFinish();
     }
 
-    @Scheduled(cron = "0 10 23 * * ?")
+    @Scheduled(cron = "0 0 23 * * ?")
     public void scheduleDelivery4() throws InterruptedException {
         scheduleDelivery();
     }
 
-    @Scheduled(cron = "0 40 23 * * ?")
+    @Scheduled(cron = "0 30 23 * * ?")
     public void scheduleFinish4() throws InterruptedException {
         scheduleFinish();
     }
 
-    @Scheduled(cron = "0 10 20 * * ?")
+    @Scheduled(cron = "0 0 20 * * ?")
     public void scheduleDelivery5() throws InterruptedException {
         scheduleDelivery();
     }
 
-    @Scheduled(cron = "0 40 20 * * ?")
+    @Scheduled(cron = "0 30 20 * * ?")
     public void scheduleFinish5() throws InterruptedException {
         scheduleFinish();
     }
@@ -136,7 +136,7 @@ public class ScheduledTasks {
     }
 
     //每天7点执行加购物车
-    @Scheduled(cron = "0 0 7 * * ?")
+    @Scheduled(cron = "0 0 6 * * ?")
     public void scheduleOrder() throws InterruptedException {
         Logger.info("定时任务执行批量登录操作");
         String loginall = orderAction.loginall();
@@ -149,7 +149,7 @@ public class ScheduledTasks {
     }
 
     //每天19点执行账户资金收集
-    @Scheduled(cron = "0 0 19 * * ?")
+    @Scheduled(cron = "0 50 18 * * ?")
     public void scheduleShouge() throws InterruptedException {
         Logger.info("定时任务执行批量登录操作");
         String loginall = orderAction.loginall();
@@ -163,7 +163,7 @@ public class ScheduledTasks {
 
 
     //收益警告，防止忘记支付
-    @Scheduled(cron = "0 0 21 * * ?")
+    @Scheduled(cron = "0 50 20 * * ?")
     public void schedulShouyiWarn() {
         List<ShouYiVo> shouYiVoList = orderAction.shouyi();
         if (CollectionUtils.isEmpty(shouYiVoList) || "-1".equals(shouYiVoList.get(0).getResult())) {
