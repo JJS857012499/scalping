@@ -54,6 +54,7 @@ public class ST {
     static {
         headers.put("version", "32");
         headers.put("app_key", "android");
+        headers.put("terminalId", "006");
     }
 
     public static Map<String, String> cache = CollectionKit.newHashMap();
