@@ -10,86 +10,79 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * @author JianChow
- * @date 2018-04-01
- */
-//configurator交给spring实例化websocket
-@ServerEndpoint(value = "/websocket/{username}")
+@ServerEndpoint("/websocket/{username}")
 @Component
-public class WebSocket {
-
-    private static int onlineCount = 0;
-    public static Map<String, WebSocket> clients = new ConcurrentHashMap<String, WebSocket>();
+public class WebSocket
+{
+    private static int onlineCount;
+    public static Map<String, WebSocket> clients;
     public Session session;
     public String username;
-
+    
     @OnOpen
-    public void onOpen(@PathParam("username") String username, Session session) throws IOException {
-
+    public void onOpen(@PathParam("username") final String username, final Session session) throws IOException {
         this.username = username;
         this.session = session;
-
         addOnlineCount();
-        clients.put(username, this);
-        System.out.println("已连接");
+        WebSocket.clients.put(username, this);
+        System.out.println("\u5df2\u8fde\u63a5");
     }
-
+    
     @OnClose
     public void onClose() throws IOException {
-        clients.remove(username);
+        WebSocket.clients.remove(this.username);
         subOnlineCount();
     }
-
+    
     @OnMessage
-    public void onMessage(String message) throws IOException {
-        JSONObject jsonObject = new JSONObject();
-        JSONObject jsonTo = jsonObject.getJSONObject(message);
-
-        if (!jsonTo.get("To").equals("All")){
-            sendMessageTo("给一个人", jsonTo.get("To").toString());
-        }else{
-            sendMessageAll("给所有人");
+    public void onMessage(final String message) throws IOException {
+        final JSONObject jsonObject = new JSONObject();
+        final JSONObject jsonTo = jsonObject.getJSONObject(message);
+        if (!jsonTo.get((Object)"To").equals("All")) {
+            this.sendMessageTo("\u7ed9\u4e00\u4e2a\u4eba", jsonTo.get((Object)"To").toString());
+        }
+        else {
+            this.sendMessageAll("\u7ed9\u6240\u6709\u4eba");
         }
     }
-
+    
     @OnError
-    public void onError(Session session, Throwable error) {
+    public void onError(final Session session, final Throwable error) {
         error.printStackTrace();
     }
-
-    public void sendMessageTo(String message, String To){
-        // session.getBasicRemote().sendText(message);
-        //session.getAsyncRemote().sendText(message);
-        for (WebSocket item : clients.values()) {
-            if (item.username.equals(To) ){
+    
+    public void sendMessageTo(final String message, final String To) {
+        for (final WebSocket item : WebSocket.clients.values()) {
+            if (item.username.equals(To)) {
                 item.session.getAsyncRemote().sendText(message);
             }
-
         }
     }
-
-    public void sendMessageAll(String message) throws IOException {
-        for (WebSocket item : clients.values()) {
+    
+    public void sendMessageAll(final String message) throws IOException {
+        for (final WebSocket item : WebSocket.clients.values()) {
             item.session.getAsyncRemote().sendText(message);
         }
     }
-
-
-
+    
     public static synchronized int getOnlineCount() {
-        return onlineCount;
+        return WebSocket.onlineCount;
     }
-
+    
     public static synchronized void addOnlineCount() {
-        WebSocket.onlineCount++;
+        ++WebSocket.onlineCount;
     }
-
+    
     public static synchronized void subOnlineCount() {
-        WebSocket.onlineCount--;
+        --WebSocket.onlineCount;
     }
-
+    
     public static synchronized Map<String, WebSocket> getClients() {
-        return clients;
+        return WebSocket.clients;
+    }
+    
+    static {
+        WebSocket.onlineCount = 0;
+        WebSocket.clients = new ConcurrentHashMap<String, WebSocket>();
     }
 }

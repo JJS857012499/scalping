@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<generatorConfiguration>
+    <!--<classPathEntry location="/Users/kame/Documents/dev/sdks/repository/mysql/mysql-connector-java/5.1.39/mysql-connector-java-5.1.39.jar"/>-->
+    <context id="prod" targetRuntime="MyBatis3" defaultModelType="flat">
+        <!-- RowBounds pagination -->
+        <plugin type="org.mybatis.generator.plugins.RowBoundsPlugin"/>
+        <plugin type="org.mybatis.generator.plugins.CaseInsensitiveLikePlugin"/>
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
+        <!--<plugin type="com.zhidian.cloud.common.utils.plugins.mybatis.generation.MybatisGeneratorCachePlugin"/>-->
+        <plugin type="org.mybatis.generator.plugins.ToStringPlugin"/>
+
+
+        <commentGenerator>
+            <property name="suppressDate" value="true"/>
+            <property name="suppressAllComments" value="true"/>
+        </commentGenerator>
+
+
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://47.106.105.9:3306/zd_sd" userId="root"
+                        password="123456"/>
+        <!--<jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://192.168.199.11:3308/bank" userId="zhidianlife"
+                        password="zdsh123456"/>-->
+
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="true"/>
+        </javaTypeResolver>
+
+        <javaModelGenerator targetPackage="com.exp.demo.pojo"
+                            targetProject="${targetJavaProject}">
+            <!-- 是否针对string类型的字段在set的时候进行trim调用 -->
+            <property name="trimStrings" value="true"/>
+            <property name="enableSubPackages" value="true"/>
+        </javaModelGenerator>
+        <sqlMapGenerator targetPackage="mapperXml" targetProject="${targetResourcesProject}"/>
+        <javaClientGenerator targetPackage="com.exp.demo.dao"
+                             targetProject="${targetJavaProject}" type="XMLMAPPER">
+            <!--<property name="rootInterface" value="com.zhidian.cloud.common.utils.plugins.mybatis.generation.BaseMapper"/>-->
+        </javaClientGenerator>
+
+        <table tableName="sd_gx" enableCountByExample="false"
+               enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
+               selectByExampleQueryId="false"/>
+    </context>
+</generatorConfiguration>

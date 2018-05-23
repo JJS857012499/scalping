@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.exp.demo.dao.SdSessionMapper">
+  <resultMap id="BaseResultMap" type="com.exp.demo.pojo.SdSession">
+    <id column="user_id" jdbcType="CHAR" property="userId" />
+    <result column="session_id" jdbcType="VARCHAR" property="sessionId" />
+    <result column="phone" jdbcType="CHAR" property="phone" />
+    <result column="login_password" jdbcType="VARCHAR" property="loginPassword" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    user_id, session_id, phone, login_password
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from sd_session
+    where user_id = #{userId,jdbcType=CHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from sd_session
+    where user_id = #{userId,jdbcType=CHAR}
+  </delete>
+  <insert id="insert" parameterType="com.exp.demo.pojo.SdSession">
+    insert into sd_session (user_id, session_id, phone, 
+      login_password)
+    values (#{userId,jdbcType=CHAR}, #{sessionId,jdbcType=VARCHAR}, #{phone,jdbcType=CHAR}, 
+      #{loginPassword,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.exp.demo.pojo.SdSession">
+    insert into sd_session
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="sessionId != null">
+        session_id,
+      </if>
+      <if test="phone != null">
+        phone,
+      </if>
+      <if test="loginPassword != null">
+        login_password,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        #{userId,jdbcType=CHAR},
+      </if>
+      <if test="sessionId != null">
+        #{sessionId,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        #{phone,jdbcType=CHAR},
+      </if>
+      <if test="loginPassword != null">
+        #{loginPassword,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.exp.demo.pojo.SdSession">
+    update sd_session
+    <set>
+      <if test="sessionId != null">
+        session_id = #{sessionId,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        phone = #{phone,jdbcType=CHAR},
+      </if>
+      <if test="loginPassword != null">
+        login_password = #{loginPassword,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where user_id = #{userId,jdbcType=CHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.exp.demo.pojo.SdSession">
+    update sd_session
+    set session_id = #{sessionId,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=CHAR},
+      login_password = #{loginPassword,jdbcType=VARCHAR}
+    where user_id = #{userId,jdbcType=CHAR}
+  </update>
+</mapper>

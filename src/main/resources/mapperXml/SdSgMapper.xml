@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.exp.demo.dao.SdSgMapper">
+  <resultMap id="BaseResultMap" type="com.exp.demo.pojo.SdSg">
+    <id column="sg_id" jdbcType="CHAR" property="sgId" />
+    <result column="user_id" jdbcType="CHAR" property="userId" />
+    <result column="main_account" jdbcType="VARCHAR" property="mainAccount" />
+    <result column="zi_zccount" jdbcType="VARCHAR" property="ziZccount" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    sg_id, user_id, main_account, zi_zccount
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from sd_sg
+    where sg_id = #{sgId,jdbcType=CHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from sd_sg
+    where sg_id = #{sgId,jdbcType=CHAR}
+  </delete>
+  <insert id="insert" parameterType="com.exp.demo.pojo.SdSg">
+    insert into sd_sg (sg_id, user_id, main_account, 
+      zi_zccount)
+    values (#{sgId,jdbcType=CHAR}, #{userId,jdbcType=CHAR}, #{mainAccount,jdbcType=VARCHAR}, 
+      #{ziZccount,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.exp.demo.pojo.SdSg">
+    insert into sd_sg
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="sgId != null">
+        sg_id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="mainAccount != null">
+        main_account,
+      </if>
+      <if test="ziZccount != null">
+        zi_zccount,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="sgId != null">
+        #{sgId,jdbcType=CHAR},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=CHAR},
+      </if>
+      <if test="mainAccount != null">
+        #{mainAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="ziZccount != null">
+        #{ziZccount,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.exp.demo.pojo.SdSg">
+    update sd_sg
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=CHAR},
+      </if>
+      <if test="mainAccount != null">
+        main_account = #{mainAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="ziZccount != null">
+        zi_zccount = #{ziZccount,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where sg_id = #{sgId,jdbcType=CHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.exp.demo.pojo.SdSg">
+    update sd_sg
+    set user_id = #{userId,jdbcType=CHAR},
+      main_account = #{mainAccount,jdbcType=VARCHAR},
+      zi_zccount = #{ziZccount,jdbcType=VARCHAR}
+    where sg_id = #{sgId,jdbcType=CHAR}
+  </update>
+</mapper>

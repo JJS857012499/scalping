@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.exp.demo.dao.SdGxMapper">
+  <resultMap id="BaseResultMap" type="com.exp.demo.pojo.SdGx">
+    <id column="gx_id" jdbcType="CHAR" property="gxId" />
+    <result column="user_id" jdbcType="CHAR" property="userId" />
+    <result column="main_account" jdbcType="VARCHAR" property="mainAccount" />
+    <result column="zi_account" jdbcType="VARCHAR" property="ziAccount" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    gx_id, user_id, main_account, zi_account
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from sd_gx
+    where gx_id = #{gxId,jdbcType=CHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from sd_gx
+    where gx_id = #{gxId,jdbcType=CHAR}
+  </delete>
+  <insert id="insert" parameterType="com.exp.demo.pojo.SdGx">
+    insert into sd_gx (gx_id, user_id, main_account, 
+      zi_account)
+    values (#{gxId,jdbcType=CHAR}, #{userId,jdbcType=CHAR}, #{mainAccount,jdbcType=VARCHAR}, 
+      #{ziAccount,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.exp.demo.pojo.SdGx">
+    insert into sd_gx
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="gxId != null">
+        gx_id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="mainAccount != null">
+        main_account,
+      </if>
+      <if test="ziAccount != null">
+        zi_account,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="gxId != null">
+        #{gxId,jdbcType=CHAR},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=CHAR},
+      </if>
+      <if test="mainAccount != null">
+        #{mainAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="ziAccount != null">
+        #{ziAccount,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.exp.demo.pojo.SdGx">
+    update sd_gx
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=CHAR},
+      </if>
+      <if test="mainAccount != null">
+        main_account = #{mainAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="ziAccount != null">
+        zi_account = #{ziAccount,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where gx_id = #{gxId,jdbcType=CHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.exp.demo.pojo.SdGx">
+    update sd_gx
+    set user_id = #{userId,jdbcType=CHAR},
+      main_account = #{mainAccount,jdbcType=VARCHAR},
+      zi_account = #{ziAccount,jdbcType=VARCHAR}
+    where gx_id = #{gxId,jdbcType=CHAR}
+  </update>
+</mapper>
