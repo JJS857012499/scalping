@@ -4,8 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.exp.demo.ST;
-import com.exp.demo.queue.*;
-import com.exp.demo.queue.Queue;
 import com.exp.demo.utils.HttpClientUtil;
 import com.exp.demo.utils.JsonUtil;
 import com.exp.demo.utils.Md5Util;
@@ -101,134 +99,138 @@ public class ExpectedEarningsAction {
     }
 
     @ResponseBody
-    @RequestMapping(value = "shouge",method = RequestMethod.POST)
-    public String shouge(){
-            String userId = ((String) ST.cache.get(mainAccount)).split("@")[0];
-            ShopProductVo shopProductVo = new ShopProductVo();
-            shopProductVo.setShopId(userId);
-            String result = HttpClientUtil.sendHttpsPost("https://s1.zhidianlife.com/search/api/v2/commodity/searchByShop", JSON.toJSONString(shopProductVo), ST.headers);
-            JSONObject resultJson = JSON.parseObject(result);
-            JSONObject data = resultJson.getJSONObject("data");
-            JSONArray commodityList = data.getJSONArray("commodityList");
-            List<JSONObject> jsonObjects = commodityList.toJavaList(JSONObject.class);
-            List<String> productIdz = (List) jsonObjects.stream().map((t) -> {
-                return t.getString("productId");
-            }).collect(Collectors.toList());
-            //运算商品
-            for (String s:ziAccount){
-                Map<String, String> header = ST.headers;
-                String sessionId = ST.cache.get(s);
-                header.put("sessionId", sessionId);
-                String result1 = HttpClientUtil.sendHttpsPost(ST.tixian,null, ST.headers);
-                log.info("yuqi result : {}", result1);
-                JSONObject jsonObject2 = JSON.parseObject(result1);
-                JSONObject data1 = jsonObject2.getJSONObject("data");
-                //可提
-                String keti = data1.getString("totalCash");
-                double k=Double.valueOf(keti);
-                if(k<=40D){
-                    continue;
-                }
-                //计算商品
-                Map<String,ProductVo> map=new HashMap<>();
-                Map<String, ProductVo> skumap = getSku(map, productIdz, keti);
-                List<ProductVo> skus = new ArrayList<>();
-                skumap.forEach((a,v)->{
-                    skus.add(v);
-                });
-                //加入购物车
-                for(ProductVo p:skus){
-                    try {
-                        Thread.sleep(200L);
-                    } catch (InterruptedException var8) {
-                        var8.printStackTrace();
-                    }
-                    String result2 = HttpClientUtil.sendHttpsPost("https://app.zhidianlife.com/life-h2h/order/apis/unity/v1/car/addCar", JsonUtil.toJson(p), ST.headers);
-                    System.out.println(result2);
-                }
-                //获取账户信息->收货地址
-                String s1 = HttpClientUtil.sendHttpsPost(ST.shdz,null, header);
-                JSONObject json_shdz_data = JSON.parseObject(s1);
-                String receiveId;
-                JSONArray shdzList = json_shdz_data.getJSONArray("data");
-                List<JSONObject> shdzs = shdzList.toJavaList(JSONObject.class);
-                if(shdzs.size()<1){
-                    return "收货地址不能为空";
-                }else{
-                    receiveId=shdzs.get(0).getString("receiveId");
-                }
-                System.out.println(receiveId);
-                //下单
-                OrderVo orderVo = new OrderVo();
-                orderVo.setReceiveId(receiveId);
-                orderVo.setSource(2);
-                String s2 = Md5Util.encoderByMd5(payPassword);
-                String pw="zhidianlife_2016"+s2;
-                byte[] bytes = pw.getBytes();
-                Base64.Encoder encoder = Base64.getEncoder();
-                String s3 = encoder.encodeToString(bytes);
-                orderVo.setPayPassword(s3);
-                orderVo.setUseECard("0");
-                orderVo.setIsUseBalance("0");
-                orderVo.setUseVoucher("1");
-                List<OrderVo.OrderShop> orderShops = new ArrayList<>();
-                log.info(JSON.toJSONString(skus));
-                OrderVo.OrderShop orderShop = new OrderVo.OrderShop();
-                orderShop.setShopId(ST.cache.get(mainAccount).split("@")[0]);
-                orderShop.setInvoiceRequired("0");
-                orderShop.setLogisticsType("1");
-                orderShop.setProducts(skus);
-                orderShops.add(orderShop);
-                orderVo.setShopList(orderShops);
-                log.info(JsonUtil.toJson(orderVo));
+    @RequestMapping(value = "shouge", method = RequestMethod.POST)
+    public String shouge() {
+        String userId = ST.cache.get(mainAccount).split("@")[0];
+        ShopProductVo shopProductVo = new ShopProductVo();
+        shopProductVo.setShopId(userId);
+        String result = HttpClientUtil.sendHttpsPost("https://s1.zhidianlife.com/search/api/v2/commodity/searchByShop", JSON.toJSONString(shopProductVo), ST.headers);
+        JSONObject resultJson = JSON.parseObject(result);
+        JSONObject data = resultJson.getJSONObject("data");
+        JSONArray commodityList = data.getJSONArray("commodityList");
+        List<JSONObject> jsonObjects = commodityList.toJavaList(JSONObject.class);
+        List<String> productIdz = jsonObjects.stream().map((t) -> t.getString("productId")).collect(Collectors.toList());
+        List<String> excludeProdutIds = new ArrayList<>();
+        //record goods that being add car, prevent repetition.
+        //运算商品
+        for (String s : ziAccount) {
+            Map<String, String> header = ST.headers;
+            String sessionId = ST.cache.get(s);
+            header.put("sessionId", sessionId);
+            String result1 = HttpClientUtil.sendHttpsPost(ST.tixian, null, ST.headers);
+            log.info("yuqi result : {}", result1);
+            JSONObject jsonObject2 = JSON.parseObject(result1);
+            JSONObject data1 = jsonObject2.getJSONObject("data");
+            //可提
+            String keti = data1.getString("totalCash");
+            double k = Double.valueOf(keti);
+            if (k <= 40D) {
+                continue;
+            }
+            //计算商品
+            Map<String, ProductVo> map = new HashMap<>();
+            Map<String, ProductVo> skumap = getSku(map, productIdz, keti, excludeProdutIds);
+            List<ProductVo> skus = new ArrayList<>();
+            skumap.forEach((a, v) -> {
+                skus.add(v);
+            });
+            //加入购物车
+            for (ProductVo p : skus) {
                 try {
                     Thread.sleep(200L);
                 } catch (InterruptedException var8) {
                     var8.printStackTrace();
                 }
-                String result2 = HttpClientUtil.sendHttpsPost(ST.addOrder, JsonUtil.toJson(orderVo), ST.headers);
-                JSONObject order = JSON.parseObject(result2);
-                if("000".equals(order.getString("result"))){
-                    log.info("账户:{},已经成功将资金转移主号",s);
-                }
-                log.info(result2);
+                String result2 = HttpClientUtil.sendHttpsPost("https://app.zhidianlife.com/life-h2h/order/apis/unity/v1/car/addCar", JsonUtil.toJson(p), ST.headers);
+                System.out.println(result2);
             }
-            return "账户资金收集成功";
-
+            //获取账户信息->收货地址
+            String s1 = HttpClientUtil.sendHttpsPost(ST.shdz, null, header);
+            JSONObject json_shdz_data = JSON.parseObject(s1);
+            String receiveId;
+            JSONArray shdzList = json_shdz_data.getJSONArray("data");
+            List<JSONObject> shdzs = shdzList.toJavaList(JSONObject.class);
+            if (shdzs.size() < 1) {
+                return "收货地址不能为空";
+            } else {
+                receiveId = shdzs.get(0).getString("receiveId");
+            }
+            System.out.println(receiveId);
+            //下单
+            OrderVo orderVo = new OrderVo();
+            orderVo.setReceiveId(receiveId);
+            orderVo.setSource(2);
+            String s2 = Md5Util.encoderByMd5(payPassword);
+            String pw = "zhidianlife_2016" + s2;
+            byte[] bytes = pw.getBytes();
+            Base64.Encoder encoder = Base64.getEncoder();
+            String s3 = encoder.encodeToString(bytes);
+            orderVo.setPayPassword(s3);
+            orderVo.setUseECard("0");
+            orderVo.setIsUseBalance("0");
+            orderVo.setUseVoucher("1");
+            List<OrderVo.OrderShop> orderShops = new ArrayList<>();
+            log.info(JSON.toJSONString(skus));
+            OrderVo.OrderShop orderShop = new OrderVo.OrderShop();
+            orderShop.setShopId(ST.cache.get(mainAccount).split("@")[0]);
+            orderShop.setInvoiceRequired("0");
+            orderShop.setLogisticsType("1");
+            orderShop.setProducts(skus);
+            orderShops.add(orderShop);
+            orderVo.setShopList(orderShops);
+            log.info(JsonUtil.toJson(orderVo));
+            try {
+                Thread.sleep(200L);
+            } catch (InterruptedException var8) {
+                var8.printStackTrace();
+            }
+            String result2 = HttpClientUtil.sendHttpsPost(ST.addOrder, JsonUtil.toJson(orderVo), ST.headers);
+            JSONObject order = JSON.parseObject(result2);
+            if ("000".equals(order.getString("result"))) {
+                log.info("账户:{},已经成功将资金转移主号", s);
+            }
+            log.info(result2);
+        }
+        return "账户资金收集成功";
     }
 
-    private Map<String,ProductVo> getSku(Map<String,ProductVo> skuMap,List<String> productIdz,String keti) {
-        Map<String,ProductVo> sku;
-        Double k=Double.valueOf(keti);
+    private Map<String, ProductVo> getSku(Map<String, ProductVo> skuMap, List<String> productIdz, String keti, List<String> excludeProdutIds) {
+        Map<String, ProductVo> sku;
+        Double k = Double.valueOf(keti);
         Random rand = new Random();
-        int size = productIdz.size();
-        int myRand = rand.nextInt(size);
-        String pid = (String) productIdz.get(myRand);
+        int myRand = rand.nextInt(productIdz.size());
+        String pid = productIdz.get(myRand);
+        if(excludeProdutIds.contains(pid)){
+            return getSku(skuMap,productIdz,keti,excludeProdutIds);
+        }
+
         ProductVo productVo = getProductVo(pid);
         Double dprice = productVo.getPrice().doubleValue();
-        dprices=dprices+dprice;
+        dprices = dprices + dprice;
         ProductVo productVo1 = skuMap.get(productVo.getSkuId());
 
-        if(k-dprices>=0 && k-dprices<=40){
+        if (k - dprices >= 0 && k - dprices <= 40) {
 
-            if(productVo1 !=null){
-                productVo1.setQuantity(productVo1.getQuantity()+1);
-            }else {
-                skuMap.put(productVo.getSkuId(),productVo);
+            if (productVo1 != null) {
+                productVo1.setQuantity(productVo1.getQuantity() + 1);
+            } else {
+                excludeProdutIds.add(pid);
+                skuMap.put(productVo.getSkuId(), productVo);
             }
-            dprices=0D;
+            dprices = 0D;
             return skuMap;
-        }else if(k-dprices>40){
+        } else if (k - dprices > 40) {
 
-            if(productVo1 !=null){
-                productVo1.setQuantity(productVo1.getQuantity()+1);
-            }else {
-                skuMap.put(productVo.getSkuId(),productVo);
+            if (productVo1 != null) {
+                productVo1.setQuantity(productVo1.getQuantity() + 1);
+            } else {
+                excludeProdutIds.add(pid);
+                skuMap.put(productVo.getSkuId(), productVo);
             }
-            sku = getSku(skuMap, productIdz, keti);
-        }else {
-            dprices=dprices-dprice;
-            sku = getSku(skuMap, productIdz, keti);
+            sku = getSku(skuMap, productIdz, keti, excludeProdutIds);
+        } else {
+            dprices = dprices - dprice;
+            sku = getSku(skuMap, productIdz, keti, excludeProdutIds);
         }
         return sku;
     }
