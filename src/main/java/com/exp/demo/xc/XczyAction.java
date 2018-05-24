@@ -394,8 +394,8 @@ public class XczyAction {
                     loginVo.setPassword(Md5Util.encoderByMd5(password));
                 }
                 loginVo.setPhone(phone);
-                String result2 = HttpClientUtil.sendHttpsPost("https://account.zhidianlife.com/passport/api/mobile/login", JSON.toJSONString((Object) loginVo), XC.headers);
-                XczyAction.log.info("phone = %s,login result : {}", (Object) phone, (Object) result2);
+                String result2 = HttpClientUtil.sendHttpsPost("https://account.zhidianlife.com/passport/api/mobile/login", JSON.toJSONString(loginVo), XC.headers);
+                XczyAction.log.info("phone = %s,login result : {}", phone, result2);
                 jsonObject1 = JSON.parseObject(result2);
                 data = jsonObject1.getJSONObject("data");
                 XczyAction.log.info("sessionId : {}", (Object) data.getString("sessionId"));
@@ -403,11 +403,11 @@ public class XczyAction {
                 userId = XC.cache.get(phone).split("@")[0];
                 shopProductVo = new ShopProductVo();
                 shopProductVo.setShopId(userId);
-                result3 = HttpClientUtil.sendHttpsPost("https://s1.zhidianlife.com/search/api/v2/commodity/searchByShop", JSON.toJSONString((Object) shopProductVo), XC.headers);
+                result3 = HttpClientUtil.sendHttpsPost("https://s1.zhidianlife.com/search/api/v2/commodity/searchByShop", JSON.toJSONString(shopProductVo), XC.headers);
                 resultJson = JSON.parseObject(result3);
                 data2 = resultJson.getJSONObject("data");
                 commodityList = data2.getJSONArray("commodityList");
-                productIds = (List<ProductVo>) CollectionKit.newArrayList();
+                productIds = CollectionKit.newArrayList();
                 for (int i = 0; i < commodityList.size(); ++i) {
                     p = commodityList.getJSONObject(i);
                     pid = p.getString("productId");
@@ -416,12 +416,12 @@ public class XczyAction {
                         productIds.add(productVo);
                     }
                 }
-                productIds.sort((o1, o2) -> o1.getPrice().compareTo(o2.getPrice()));
-                innerFirstList = new ArrayList<ProductVo>();
-                innerSecList = new ArrayList<ProductVo>();
-                innerThirdList_1 = new ArrayList<ProductVo>();
-                innerThirdList_2 = new ArrayList<ProductVo>();
-                innerThirdList_3 = new ArrayList<ProductVo>();
+                productIds.sort(Comparator.comparing(ProductVo::getPrice));
+                innerFirstList = new ArrayList<>();
+                innerSecList = new ArrayList<>();
+                innerThirdList_1 = new ArrayList<>();
+                innerThirdList_2 = new ArrayList<>();
+                innerThirdList_3 = new ArrayList<>();
                 first = this.choicePrice(userId, this.deepCopy(productIds), innerFirstList);
                 sec = this.choicePrice(userId, this.deepCopy(productIds), innerSecList);
                 totalPrice = new BigDecimal(200).add(first.add(sec));
