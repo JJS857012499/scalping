@@ -2,6 +2,7 @@ package com.exp.demo.task;
 
 import com.exp.demo.action.ExpectedEarningsAction;
 import com.exp.demo.action.OrderAction;
+import com.exp.demo.action.v2.OrderAction2;
 import com.exp.demo.vo.ShouYiVo;
 import com.exp.demo.wx.TemplateData;
 import com.exp.demo.wx.WX_TemplateMsgUtil;
@@ -28,6 +29,9 @@ public class ScheduledTasks {
 
     @Autowired
     private OrderAction orderAction;
+
+    @Autowired
+    private OrderAction2 orderAction2;
 
     @Autowired
     private ExpectedEarningsAction expectedEarningsAction;
@@ -148,7 +152,7 @@ public class ScheduledTasks {
         Logger.info("执行结果：" + removeCar);
 
         Logger.info("定时任务执行批量加购物车");
-        String order = orderAction.order();
+        String order = orderAction2.order();
         Logger.info("执行结果：" + order);
     }
 
